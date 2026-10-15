@@ -34,7 +34,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'nombreU' => 'required|string',
-            'contrasena' => 'required|string|min:8',
+            'contrasena' => 'required|string',
         ];
     }
 
@@ -43,7 +43,6 @@ class LoginRequest extends FormRequest
         return [
             'nombreU.required' => 'El usuario o correo es obligatorio.',
             'contrasena.required' => 'La contraseña es obligatoria.',
-            'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres.',
         ];
     }
 
