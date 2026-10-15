@@ -13,13 +13,37 @@ class LoginRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $identifier = $this->input('nombreU') 
+            ?? $this->input('email') 
+            ?? $this->input('username') 
+            ?? $this->input('usuario');
+
+        $password = $this->input('contrasena') 
+            ?? $this->input('password') 
+            ?? $this->input('clave');
+
+        $this->merge([
+            'nombreU' => $identifier,
+            'contrasena' => $password,
+        ]);
+    }
+
     public function rules(): array
     {
         return [
-            'nombreU' => 'required_without:email|string',
-            'email' => 'required_without:nombreU|string',
-            'contrasena' => 'required_without:password|string|min:8',
-            'password' => 'required_without:contrasena|string|min:8',
+            'nombreU' => 'required|string',
+            'contrasena' => 'required|string|min:8',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nombreU.required' => 'El usuario o correo es obligatorio.',
+            'contrasena.required' => 'La contraseña es obligatoria.',
+            'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres.',
         ];
     }
 
@@ -27,6 +51,7 @@ class LoginRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success' => false,
+            'message' => 'Error de validación',
             'errors' => $validator->errors()
         ], 422));
     }
