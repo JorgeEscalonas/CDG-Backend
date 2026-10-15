@@ -15,8 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Removido EnsureFrontendRequestsAreStateful para usar tokens Bearer en lugar de cookies
         // Esto evita el error CSRF token mismatch en las rutas API
         
+        $middleware->throttleApi();
+
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
         
         // Excluir todas las rutas API de validación CSRF

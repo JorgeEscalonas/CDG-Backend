@@ -57,6 +57,31 @@ Siga estos pasos para desplegar el entorno de desarrollo:
    php artisan serve
    ```
 
+## Configuración de producción
+
+En el archivo `.env` de producción:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+FRONTEND_URL=https://tu-dominio-frontend
+```
+
+Después de desplegar, cachea configuración y rutas ejecutando:
+
+```bash
+php artisan config:cache route:cache
+```
+
+O por separado:
+
+```bash
+php artisan config:cache
+php artisan route:cache
+```
+
+No dejes `APP_DEBUG=true` en producción: expone trazas y datos internos sensibles. `FRONTEND_URL` debe coincidir con el origen del frontend (CORS).
+
 ## Especificaciones de la API
 
 ### Formato de Respuestas Exitosas

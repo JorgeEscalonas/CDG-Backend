@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\API\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -16,36 +16,30 @@ class AuthController extends Controller
      */
     public function login(\App\Http\Requests\API\LoginRequest $request): JsonResponse
     {
-        $user = User::where('nombreU', $request->nombreU)->first();
+        $identifier = $request->nombreU ?? $request->email;
+        $password = $request->contrasena ?? $request->password;
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Credenciales inválidas'
-            ], 401);
-        }
+        $user = User::where('nombreU', $identifier)->first();
 
-        // Verificar contraseña (puede estar hasheada o en texto plano)
         $passwordValid = false;
-        
-        // Si la contraseña está hasheada, usar Hash::check
-        if (password_get_info($user->contrasena)['algoName'] === 'bcrypt') {
-            $passwordValid = Hash::check($request->contrasena, $user->contrasena);
-        } else {
-            // Si no está hasheada, comparar directamente (para migración)
-            $passwordValid = $user->contrasena === $request->contrasena;
-            
-            // Si la contraseña es correcta pero no está hasheada, hashearla ahora
-            if ($passwordValid) {
-                $user->contrasena = Hash::make($request->contrasena);
-                $user->save();
+
+        if ($user) {
+            if (password_get_info($user->contrasena)['algoName'] === 'bcrypt') {
+                $passwordValid = Hash::check($password, $user->contrasena);
+            } else {
+                $passwordValid = $user->contrasena === $password;
+
+                if ($passwordValid) {
+                    $user->contrasena = Hash::make($password);
+                    $user->save();
+                }
             }
         }
 
-        if (!$passwordValid) {
+        if (! $user || ! $passwordValid) {
             return response()->json([
                 'success' => false,
-                'message' => 'Credenciales inválidas'
+                'message' => 'Credenciales incorrectas',
             ], 401);
         }
 
@@ -55,12 +49,9 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Login exitoso',
             'data' => [
-                'user' => [
-                    'id' => $user->idUsuario,
-                    'nombre' => $user->nombreU
-                ],
-                'token' => $token
-            ]
+                'user' => (new UserResource($user))->resolve(),
+                'token' => $token,
+            ],
         ]);
     }
 
@@ -84,10 +75,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => [
-                'id' => $request->user()->idUsuario,
-                'nombre' => $request->user()->nombreU
-            ]
+            'data' => (new UserResource($request->user()))->resolve(),
         ]);
     }
 }

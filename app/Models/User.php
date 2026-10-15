@@ -18,6 +18,7 @@ class User extends Authenticatable
     protected $fillable = [
         'nombreU',
         'contrasena',
+        'role',
     ];
 
     protected $hidden = [
@@ -32,6 +33,11 @@ class User extends Authenticatable
     public function getAuthPassword()
     {
         return $this->contrasena;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
     
     /**
