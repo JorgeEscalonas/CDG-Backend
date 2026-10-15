@@ -32,7 +32,9 @@ Siga estos pasos para desplegar el entorno de desarrollo:
 2. Configurar el archivo de entorno:
 
    ```bash
-   copy .env.example .env
+   cp .env.example .env
+   # En Windows (CMD):
+   # copy .env.example .env
    ```
 
 3. Generar la clave única de la aplicación:
@@ -91,9 +93,11 @@ Todas las respuestas exitosas siguen la siguiente estructura:
 #### Gestión de Inventario (CRUD)
 
 * GET|POST /api/productos - Listado y creación de productos.
-* GET|PUT|DELETE /api/productos/{id} - Detalle, edición y eliminación.
-* GET|POST /api/categorias - Gestión de categorías de productos.
-* GET|POST /api/proveedores - Gestión de proveedores.
+* GET|PUT|DELETE /api/productos/{id} - Detalle, edición y eliminación de productos.
+* GET|POST /api/categorias - Listado y creación de categorías.
+* GET|PUT|DELETE /api/categorias/{id} - Detalle, edición y eliminación de categorías.
+* GET|POST /api/proveedores - Listado y creación de proveedores.
+* GET|PUT|DELETE /api/proveedores/{id} - Detalle, edición y eliminación de proveedores.
 
 #### Monitoreo de Divisa
 
